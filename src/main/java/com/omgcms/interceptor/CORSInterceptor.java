@@ -11,7 +11,6 @@ public class CORSInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("======================>CORS111!");
 
         String origin = request.getHeader("Origin");
         origin = StringUtils.defaultIfBlank(origin, "*");
