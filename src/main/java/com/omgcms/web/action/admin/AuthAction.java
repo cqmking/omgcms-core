@@ -106,7 +106,7 @@ public class AuthAction {
 
 
     @RequestMapping("/logout")
-    public RestResponse<?> logut() {
+    public RestResponse<?> logout() {
 
         Subject currentSubject = SecurityUtils.getSubject();
 
