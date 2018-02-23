@@ -39,21 +39,17 @@
 		<!-- 登录成功后要跳转的连接(本例中此属性用不到，因为登录成功后的处理逻辑在LoginController里硬编码) -->
 		<!-- <property name="successUrl" value="/" ></property> -->
 		<!-- 用户访问未对其授权的资源时，所显示的连接 -->
-		<property name="unauthorizedUrl" value="/"></property>
+		<property name="unauthorizedUrl" value="/admin/auth/unAuth"></property>
 		<property name="filterChainDefinitions">
 			<value>
 				/admin/auth/checkLogin=anon
 				/admin/auth/logout=anon
-				/admin/**=authcBasic
+				<!--/admin/**=authc-->
 				<!-- /api/**=authc -->
 			</value>
 		</property>
 	</bean>
 
-	<!-- 开启Shiro的注解(如@RequiresRoles，@RequiresPermissions)，需借助SpringAOP扫描使用Shiro注解的类， 并在必要时进行安全逻辑验证 -->
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"></bean>
-	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-		<property name="securityManager" ref="securityManager"></property>
-	</bean>
+
 
 </beans>

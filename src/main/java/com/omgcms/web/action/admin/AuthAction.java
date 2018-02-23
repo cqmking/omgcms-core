@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthAction {
@@ -109,17 +110,37 @@ public class AuthAction {
     public RestResponse<?> logout() {
 
         Subject currentSubject = SecurityUtils.getSubject();
-
         if (currentSubject.isAuthenticated()) {
 
             realmService.clearShiroRealmCache();
             currentSubject.logout();
+
 
             return RestResponseGenerator.genSuccessResult();
         } else {
 
             return RestResponseGenerator.genErrorResult("You have not sign in!");
         }
+
+    }
+
+
+    @RequestMapping("/checkAuth")
+    public RestResponse<?> checkAuth() {
+        Subject currentSubject = SecurityUtils.getSubject();
+
+        if (currentSubject.isAuthenticated()) {
+            return RestResponseGenerator.genSuccessResult();
+        } else {
+            return RestResponseGenerator.genErrorResult("You have not logged in!");
+        }
+
+    }
+
+    @RequestMapping("/unAuth")
+    public RestResponse<?> unAuth() {
+        Subject currentSubject = SecurityUtils.getSubject();
+        return RestResponseGenerator.genErrorResult("You unAuth!");
 
     }
 

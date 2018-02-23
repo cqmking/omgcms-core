@@ -9,8 +9,16 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
+
+
     <!-- 自动扫描controller包下的所有类，如果@Controller注入为bean -->
     <context:component-scan base-package="com.omgcms.web.action.admin"/>
+
+    <!-- 开启Shiro的注解(如@RequiresRoles，@RequiresPermissions)，需借助SpringAOP扫描使用Shiro注解的类， 并在必要时进行安全逻辑验证 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"></bean>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"></property>
+    </bean>
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
         <property name="defaultLocale" value="zh_CN"/>
@@ -21,7 +29,7 @@
             <mvc:mapping path="/**"/>
             <bean class="com.omgcms.interceptor.CORSInterceptor"/>
         </mvc:interceptor>
-        
+
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
@@ -55,6 +63,7 @@
         </property>
         <property name="fileEncoding" value="UTF-8"/>
     </bean>
+
 
 
 </beans>

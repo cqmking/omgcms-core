@@ -14,7 +14,7 @@
 
 	<!-- 接口异常处理 -->
 	<bean class="com.omgcms.exception.RestExceptionHandler"/>
-	
+
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<!-- <property name="useCodeAsDefaultMessage" value="true"/> -->
 		<property name="basenames">
