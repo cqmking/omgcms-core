@@ -38,155 +38,155 @@ import com.omgcms.util.CmsUtil;
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Override
-	public User saveAndFlush(User user) {
-		
-		if(user.getUserId()==null||user.getUserId()<0){
-			// 新增
-			User exsitAccountUser = getByUserAccount(user.getUserAccount());
-			if(exsitAccountUser!=null){
-				throw new CmsRuntimeException(CmsExceptionConstants.ERROR_USERACCOUNT_ALREADY_EXIST,
-						"User already exsit for userAccount " + user.getUserAccount());
-			}
-			
-			User exsitEmailUser = getByEmail(user.getEmail());
-			if(exsitEmailUser!=null){
-				throw new CmsRuntimeException(CmsExceptionConstants.ERROR_USEREMAIL_ALREADY_EXIST,
-						"User already exsit for user email " + user.getEmail());
-			}
-		}
-		
-		return userRepository.saveAndFlush(user);
-	}
+    @Override
+    public User saveAndFlush(User user) {
 
-	@Override
-	public User getByUserAccount(String userAccount) {
-		return userRepository.getByUserAccount(userAccount);
-	}
+        if (user.getUserId() == null || user.getUserId() < 0) {
+            // 新增
+            User exsitAccountUser = getByUserAccount(user.getUserAccount());
+            if (exsitAccountUser != null) {
+                throw new CmsRuntimeException(CmsExceptionConstants.ERROR_USERACCOUNT_ALREADY_EXIST,
+                        "User already exsit for userAccount " + user.getUserAccount());
+            }
 
-	@Override
-	public User getByEmail(String email) {
-		return userRepository.getByEmail(email);
-	}
-	
-	@Override
-	public void deleteUser(long userId){
-		userRepository.delete(userId);
-	}
-	
-	public void deleteUsers(long []userIds){
-		for(long userId:userIds){
-			userRepository.delete(userId);
-		}
-	}
-	
-	@Override
-	public User getUser(long userId){
-		
-		User user = userRepository.getByUserId(userId);
-		
-		if (user == null) {
-			String arg = CmsUtil.getLocaleMessage("label.user");
-			throw new CmsRuntimeException(CmsExceptionConstants.ERROR_OBJECT_NOT_EXIST, new String[] { arg },
-					"User not exsit for userId " + userId);
-		}
-		
-		return user;
-	}
-	
-	@Override
-	public List<User> getUsersByIds(Long[] userIds) {
-		List<Long> userIdList = Arrays.asList(userIds);
-		return userRepository.findAll(userIdList);
-	}
-	
-	@Override
-	public Page<User> findUsers(int pageNo, int pageSize, String orderByProperty, String sortType) {
+            User exsitEmailUser = getByEmail(user.getEmail());
+            if (exsitEmailUser != null) {
+                throw new CmsRuntimeException(CmsExceptionConstants.ERROR_USEREMAIL_ALREADY_EXIST,
+                        "User already exsit for user email " + user.getEmail());
+            }
+        }
 
-		Direction direction = Direction.ASC;
+        return userRepository.saveAndFlush(user);
+    }
 
-		if ("DESC".equals(sortType)) {
-			direction = Direction.DESC;
-		}
+    @Override
+    public User getByUserAccount(String userAccount) {
+        return userRepository.getByUserAccount(userAccount);
+    }
 
-		Order idOrder = new Order(direction, orderByProperty);
-		Sort sort = new Sort(idOrder);
+    @Override
+    public User getByEmail(String email) {
+        return userRepository.getByEmail(email);
+    }
 
-		PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
+    @Override
+    public void deleteUser(long userId) {
+        userRepository.delete(userId);
+    }
 
-		Page<User> page = userRepository.findAll(pageable);
+    public void deleteUsers(long[] userIds) {
+        for (long userId : userIds) {
+            userRepository.delete(userId);
+        }
+    }
 
-		return page;
-	}
-	
+    @Override
+    public User getUser(long userId) {
 
-	@Override
-	public Page<User> getUsersByRoleId(int pageNo, int pageSize, String orderByProperty, String sortType, long roleId) {
-		
-		Specification<User> specification = new Specification<User>() {
+        User user = userRepository.getByUserId(userId);
 
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        if (user == null) {
+            String arg = CmsUtil.getLocaleMessage("label.user");
+            throw new CmsRuntimeException(CmsExceptionConstants.ERROR_OBJECT_NOT_EXIST, new String[]{arg},
+                    "User not exsit for userId " + userId);
+        }
 
-				Join<User, UserRole> userRoles = root.join("userRoles", JoinType.LEFT);
+        return user;
+    }
 
-				Path<String> path = userRoles.get("id").get("roleId");
-				return cb.equal(path, roleId);
-			}
-			
-		};
+    @Override
+    public List<User> getUsersByIds(Long[] userIds) {
+        List<Long> userIdList = Arrays.asList(userIds);
+        return userRepository.findAll(userIdList);
+    }
 
-		Direction direction = Direction.ASC;
+    @Override
+    public Page<User> findUsers(int pageNo, int pageSize, String orderByProperty, String sortType) {
 
-		if ("DESC".equals(sortType)) {
-			direction = Direction.DESC;
-		}
+        Direction direction = Direction.ASC;
 
-		Order idOrder = new Order(direction, orderByProperty);
-		Sort sort = new Sort(idOrder);
+        if ("DESC".equals(sortType)) {
+            direction = Direction.DESC;
+        }
 
-		PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
+        Order idOrder = new Order(direction, orderByProperty);
+        Sort sort = new Sort(idOrder);
 
-		Page<User> page = userRepository.findAll(specification, pageable);
+        PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
 
-		return page;
-	}
+        Page<User> page = userRepository.findAll(pageable);
 
-	@Override
-	public Page<User> getUnassignedRoleUsers(int pageNo, int pageSize, String orderByProperty, String sortType, long roleId) {
-		
-		Specification<User> specification = new Specification<User>() {
+        return page;
+    }
 
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				
-				Subquery<Long> subQuery = query.subquery(Long.class);
-				Root<UserRole> fromUR = subQuery.from(UserRole.class);
-				
-				subQuery.select(fromUR.get("id").get("userId")).where(cb.equal(fromUR.get("id").get("roleId"), roleId));
-				
-				return cb.not(cb.in(root.get("userId")).value(subQuery));
-				
-			}
-		};
-		
-		Direction direction = Direction.ASC;
 
-		if ("DESC".equals(sortType)) {
-			direction = Direction.DESC;
-		}
+    @Override
+    public Page<User> getUsersByRoleId(int pageNo, int pageSize, String orderByProperty, String sortType, long roleId) {
 
-		Order idOrder = new Order(direction, orderByProperty);
-		Sort sort = new Sort(idOrder);
+        Specification<User> specification = new Specification<User>() {
 
-		PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
+            @Override
+            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
-		Page<User> page = userRepository.findAll(specification, pageable);
+                Join<User, UserRole> userRoles = root.join("userRoles", JoinType.LEFT);
 
-		return page;
-	}
+                Path<String> path = userRoles.get("id").get("roleId");
+                return cb.equal(path, roleId);
+            }
+
+        };
+
+        Direction direction = Direction.ASC;
+
+        if ("DESC".equals(sortType)) {
+            direction = Direction.DESC;
+        }
+
+        Order idOrder = new Order(direction, orderByProperty);
+        Sort sort = new Sort(idOrder);
+
+        PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
+
+        Page<User> page = userRepository.findAll(specification, pageable);
+
+        return page;
+    }
+
+    @Override
+    public Page<User> getUnassignedRoleUsers(int pageNo, int pageSize, String orderByProperty, String sortType, long roleId) {
+
+        Specification<User> specification = new Specification<User>() {
+
+            @Override
+            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+
+                Subquery<Long> subQuery = query.subquery(Long.class);
+                Root<UserRole> fromUR = subQuery.from(UserRole.class);
+
+                subQuery.select(fromUR.get("id").get("userId")).where(cb.equal(fromUR.get("id").get("roleId"), roleId));
+
+                return cb.not(cb.in(root.get("userId")).value(subQuery));
+
+            }
+        };
+
+        Direction direction = Direction.ASC;
+
+        if ("DESC".equals(sortType)) {
+            direction = Direction.DESC;
+        }
+
+        Order idOrder = new Order(direction, orderByProperty);
+        Sort sort = new Sort(idOrder);
+
+        PageRequest pageable = new PageRequest(pageNo - 1, pageSize, sort);
+
+        Page<User> page = userRepository.findAll(specification, pageable);
+
+        return page;
+    }
 
 }

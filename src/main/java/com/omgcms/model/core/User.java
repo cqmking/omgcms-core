@@ -67,7 +67,6 @@ public class User implements Serializable {
 	@TableGenerator(name = "ID_GENERATOR", table = "idgenerator", initialValue = 1000, allocationSize = 1, pkColumnName = "name", pkColumnValue = "userId", valueColumnName = "value")
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "ID_GENERATOR")
 	@Id
-	
 	public Long getUserId() {
 		return userId;
 	}

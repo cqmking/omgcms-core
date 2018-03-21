@@ -9,6 +9,7 @@ import com.omgcms.exception.ExceptionI18nMessage;
 import com.omgcms.model.core.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.subject.Subject;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -120,6 +121,7 @@ public class CmsUtil {
         }
         return null;
     }
+
 
     /**
      * @param code  The operation result code
